@@ -1,0 +1,9 @@
+# Malbolge language recognition for GitHub Linguist
+*.malbolge linguist-language=Malbolge
+*.mal linguist-language=Malbolge
+
+# Zig sources
+*.zig linguist-language=Zig
+
+# Auto-detect 
+*.malbolge text eol=lf
