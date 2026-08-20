@@ -1,9 +1,13 @@
-# Malbolge language recognition for GitHub Linguist
-*.malbolge linguist-language=Malbolge
-*.mal linguist-language=Malbolge
-
-# Zig sources
-*.zig linguist-language=Zig
-
-# Auto-detect 
+# GitHub Linguist no reconoce Malbolge: no existe una entrada para el lenguaje
+# en su languages.yml, asi que `linguist-language=Malbolge` no tiene efecto y se
+# ignora en silencio. Anadirlo upstream exige >=2000 archivos con la extension
+# indexados en el ultimo ano, repartidos entre repos distintos, mas una gramatica
+# de resaltado; Malbolge no se acerca.
+#
+# Lo que si se puede hacer es evitar que los ejemplos cuenten como codigo del
+# proyecto y mantener sus finales de linea intactos: un programa Malbolge es
+# sensible a cada byte.
+*.malbolge linguist-detectable=false
+*.mal      linguist-detectable=false
 *.malbolge text eol=lf
+*.mal      text eol=lf

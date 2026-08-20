@@ -97,3 +97,23 @@ Verified against 299,593 catalog entries + 417 randomized parity cases, 0 mismat
 ## License
 
 MIT
+
+## Why does GitHub say this is C?
+
+Because it is. The engine is written in C; Malbolge is what it *runs*.
+
+There is also a second reason, and it is worth writing down: **GitHub Linguist
+has no entry for Malbolge.** Brainfuck has one (`language_id: 38`, `.b`/`.bf`),
+so esoteric languages are not excluded on principle — Malbolge simply was never
+added. A `.gitattributes` line like `*.malbolge linguist-language=Malbolge`
+therefore does nothing at all: the attribute names a language Linguist does not
+know, and is ignored silently.
+
+Getting it added upstream is not a small ask. Linguist requires at least 2000
+files with the extension indexed in the past year, spread across many
+repositories, plus a syntax-highlighting grammar under an approved license and
+real-world code samples — "hello world" files are explicitly rejected.
+
+So the examples here are marked `linguist-detectable=false` instead. The
+language bar shows what the repository is made of, and this file says what it
+is for.

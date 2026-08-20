@@ -1,20 +1,33 @@
-# Build artifacts
+# Compilados: el motor se construye con `make`, no se distribuye armado.
 *.exe
 *.o
 *.obj
 *.out
+*.a
+*.so
+*.dylib
+*.dll
+*.dSYM/
+build/
 
-# Test files
+# Herramientas de desarrollo
+compile_commands.json
+.cache/
+*.gcda
+*.gcno
+
+# Pruebas locales
 test_input.jsonl
-
-# OS files
-Thumbs.db
-.DS_Store
 
 # Editor
 .vscode/
 .idea/
 *.swp
+*~
+
+# Sistema operativo
+Thumbs.db
+.DS_Store
 
 # Logs
 *.log
