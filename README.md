@@ -1,24 +1,24 @@
 # Malbolge-Engine
 
-Standalone Malbolge interpreter engine — pure C, no dependencies.
+Motor interprete Malbolge independiente — C puro, sin dependencias.
 
-Three build targets:
-- **`malbolge`** — CLI interpreter (`malbolge <file.malbolge> [max_steps] < input`)
-- **`malbolge-ipc`** — JSONL IPC server (stdin/stdout, one JSON request per line)
-- **`malbolge`** (library) — import `vm.h` and link `vm.c` into your project
+Tres targets de build:
+- **`malbolge`** — CLI interprete (`malbolge <file.malbolge> [max_steps] < input`)
+- **`malbolge-ipc`** — servidor JSONL IPC (stdin/stdout, un JSON request por linea)
+- **`malbolge`** (libreria) — importa `vm.h` y liga `vm.c` a tu proyecto
 
 ## Build
 
 ```bash
-make            # builds both malbolge + malbolge-ipc
-make ipc        # builds only the IPC server
-make test       # builds + runs the hello_world test
-make clean      # removes binaries
+make            # construye malbolge + malbolge-ipc
+make ipc        # construye solo el servidor IPC
+make test       # construye + corre la prueba hello_world
+make clean      # elimina binarios
 ```
 
-Requires: any C compiler (gcc, clang, tcc, ...). No external libraries.
+Requisitos: cualquier compilador C (gcc, clang, tcc, ...). Sin librerias externas.
 
-## Usage
+## Uso
 
 ### CLI
 
@@ -28,7 +28,7 @@ echo "" | ./malbolge examples/hello.malbolge 100000
 #         steps: 48 | status: HALTED
 ```
 
-### IPC (JSONL protocol)
+### IPC (protocolo JSONL)
 
 ```bash
 echo '{"id":1,"op":"run","program":"(=<`#9]~6ZY...","steps":100000}
@@ -36,28 +36,28 @@ echo '{"id":1,"op":"run","program":"(=<`#9]~6ZY...","steps":100000}
 {"id":3,"op":"quit"}' | ./malbolge-ipc
 ```
 
-Response:
+Respuesta:
 ```
 {"status":"ready"}
 {"id":1,"status":"OK","steps":48,"output":"Hello, world."}
 {"id":2,"status":"OK","output":"pong"}
 ```
 
-### Protocol
+### Protocolo
 
 | Request | Response |
 |---------|----------|
 | `{"id":N,"op":"run","program":"...","steps":M,"input":"..."}` | `{"id":N,"status":"OK\|INVALID\|TIMEOUT","steps":K,"output":"..."}` |
 | `{"id":N,"op":"ping"}` | `{"id":N,"status":"OK","output":"pong"}` |
-| `{"id":N,"op":"quit"}` | (server exits) |
+| `{"id":N,"op":"quit"}` | (el servidor sale) |
 
-Status values:
-- `OK` — program halted normally
-- `INVALID` — program contained invalid opcodes
-- `TIMEOUT` — exceeded `steps` limit
-- `ERROR` — runtime/parse error
+Valores de status:
+- `OK` — el programa paro normalmente
+- `INVALID` — el programa contenía opcodes invalidos
+- `TIMEOUT` — se excedio el limite de `steps`
+- `ERROR` — error de runtime/parseo
 
-### Library
+### Libreria
 
 ```c
 #include "vm.h"
@@ -65,55 +65,54 @@ Status values:
 uint32_t cells[59049];
 size_t ncells = parse_program(source, cells);
 
-vm_build_crazy5();      // call once
-vm_init();              // call before each run
+vm_build_crazy5();      // llamar una vez
+vm_init();              // llamar antes de cada corrida
 RunOutcome o = vm_run(cells, ncells, input, input_len, max_steps);
-// o.output_len bytes are in vm_out_buf[]
+// o.output_len bytes estan en vm_out_buf[]
 ```
 
-## Architecture
+## Arquitectura
 
 ```
 src/
-  vm.h         — public API + constants
-  vm.c         — Malbolge VM (exact semantics, lazy-fill overlay)
-  malbolge.c   — CLI interpreter
-  ipc.c        — JSONL IPC server
+  vm.h         — API publica + constantes
+  vm.c         — VM de Malbolge (semantica exacta, overlay lazy-fill)
+  malbolge.c   — CLI interprete
+  ipc.c        — servidor JSONL IPC
 examples/
-  hello.malbolge — "Hello, world." test program
+  hello.malbolge — programa de prueba "Hello, world."
 ```
 
-### VM semantics
+### Semanticas de la VM
 
-The VM replicates the exact behavior of the `malbolge` package's SparseMemory debugger:
+La VM replica el comportamiento exacto del debugger SparseMemory del paquete `malbolge`:
 
-- **Overlay** for source cells + writes; reads check overlay first
-- **Lazy crazy-fill** in blocks of 243 cells: tail-block seeds are read from the overlay (not source) at first far access, so prior writes (encrypts, crz, rotr) can change fill values
-- **Crazy table** precomputed as 243×243 trit pairs (5-trit blocks, combined as `crazy5[a%243][b%243] + 243*crazy5[a/243][b/243]`)
-- **Encrypt table** applied after each instruction execution
+- **Overlay** para celdas del fuente + escrituras; las lecturas checan el overlay primero
+- **Lazy crazy-fill** en bloques de 243 celdas: las semillas del bloque final se leen del overlay (no del fuente) en el primer acceso lejado, asi que escrituras previas (encrypts, crz, rotr) pueden cambiar los valores de fill
+- **Tabla crazy** precomputada como pares de trits 243×243 (bloques de 5 trits, combinados como `crazy5[a%243][b%243] + 243*crazy5[a/243][b/243]`)
+- **Tabla encrypt** aplicada despues de cada ejecucion de instruccion
 
-Verified against 299,593 catalog entries + 417 randomized parity cases, 0 mismatches.
+Verificado contra 299,593 entradas de catalogo + 417 casos aleatorios de paridad, 0 desacuerdos.
 
-## License
+## Licencia
 
 MIT
 
-## Why does GitHub say this is C?
+## Por que GitHub dice que esto es C?
 
-Because it is. The engine is written in C; Malbolge is what it *runs*.
+Porque lo es. El motor esta escrito en C; Malbolge es lo que *corre*.
 
-There is also a second reason, and it is worth writing down: **GitHub Linguist
-has no entry for Malbolge.** Brainfuck has one (`language_id: 38`, `.b`/`.bf`),
-so esoteric languages are not excluded on principle — Malbolge simply was never
-added. A `.gitattributes` line like `*.malbolge linguist-language=Malbolge`
-therefore does nothing at all: the attribute names a language Linguist does not
-know, and is ignored silently.
+Hay tambien una segunda razon, y vale la pena anotarla: **GitHub Linguist
+no tiene entrada para Malbolge.** Brainfuck si tiene una (`language_id: 38`, `.b`/`.bf`),
+asi que los lenguajes esotericos no se excluyen por principio — Malbolge simplemente nunca se
+agrego. Una linea `.gitattributes` como `*.malbolge linguist-language=Malbolge`
+por lo tanto no hace nada: el atributo nombra un lenguaje que Linguist no
+conoce, y se ignora silenciosamente.
 
-Getting it added upstream is not a small ask. Linguist requires at least 2000
-files with the extension indexed in the past year, spread across many
-repositories, plus a syntax-highlighting grammar under an approved license and
-real-world code samples — "hello world" files are explicitly rejected.
+Que lo agreguen upstream no es un pedido pequeno. Linguist requiere al menos 2000
+archivos con la extension indexada en el ultimo ano, repartidos en muchos
+repositorios, mas una gramatica de syntax-highlighting con licencia aprobada y
+ejemplos de codigo del mundo real — archivos "hello world" se rechazan explicitamente.
 
-So the examples here are marked `linguist-detectable=false` instead. The
-language bar shows what the repository is made of, and this file says what it
-is for.
+Asi que los ejemplos aqui se marcan `linguist-detectable=false` en su lugar. La
+barra de lenguajes muestra de que esta hecho el repositorio, y este archivo dice para que es.
