@@ -1,11 +1,15 @@
-# Malbolge-Engine
+# Malbolge-Engine v2.0 — Motor de Referencia C Puro con Servidor IPC JSONL
 
-Motor interprete Malbolge independiente — C puro, sin dependencias.
+[![Version](https://img.shields.io/badge/version-2.0-blue.svg)](https://github.com/DannyBaanks/Malbolge-Engine)
+[![C](https://img.shields.io/badge/language-C99-00599C.svg)](https://en.wikipedia.org/wiki/C99)
+[![Tests](https://img.shields.io/badge/tests-PASS-brightgreen.svg)]()
+
+Motor intérprete de Malbolge de referencia canónica e independiente — C puro, sin dependencias. Base semántica de la **Flota de Consenso Multi-Oráculo v2.0**.
 
 Tres targets de build:
 - **`malbolge`** — CLI interprete (`malbolge <file.malbolge> [max_steps] < input`)
-- **`malbolge-ipc`** — servidor JSONL IPC (stdin/stdout, un JSON request por linea)
-- **`malbolge`** (libreria) — importa `vm.h` y liga `vm.c` a tu proyecto
+- **`malbolge-ipc`** — servidor JSONL IPC de alta velocidad (stdin/stdout, un JSON request por línea)
+- **`malbolge`** (libreria) — importa `vm.h` y liga `vm.c` a tu proyecto directamente
 
 ## Build
 
